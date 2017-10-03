@@ -11,6 +11,7 @@
     ]
   ],
   "plugins": [
+    "emotion",
     "transform-class-properties",
     "transform-object-rest-spread",
     "lodash",
@@ -33,6 +34,7 @@
         "latest"
       ],
       "plugins": [
+        "emotion",
         "transform-class-properties",
         "transform-object-rest-spread",
         "dynamic-import-node",
