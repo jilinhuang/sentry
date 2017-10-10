@@ -418,7 +418,9 @@ exports[`OrganizationApiKeyDetailsView renders 1`] = `
                     <ul
                       className="nav nav-stacked"
                     >
-                      <li>
+                      <li
+                        className=""
+                      >
                         <a
                           href="/organizations/org-slug/members/"
                         >
