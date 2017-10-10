@@ -3,6 +3,7 @@ Version 8.22 (Unreleased)
 
 - BREAKING: Members will no longer be automatically granted membership to the
   default organization. You should use SSO or the invite flows.
+- BREAKING: Group share urls have all been invalidated and must be regenerated.
 
 Version 8.21
 ------------
