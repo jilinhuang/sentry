@@ -17,7 +17,7 @@ const OrgSettingsMenu = ({access, org, features}) => {
   if (!access.has('org:read')) return null;
 
   let hasNewSettings = features.has('new-settings');
-  let pathPrefix = `${hasNewSettings ? '/settings' : ''}/organizations/${org.slug}`;
+  let pathPrefix = `${hasNewSettings ? '/settings/organization' : '/organizations'}/${org.slug}`;
 
   return (
     <div>
