@@ -92,11 +92,6 @@ def get_hashes_for_event_with_reason(event):
             continue
         return (interface.get_path(), result)
 
-    # See discussion here https://github.com/getsentry/sentry/pull/6123#discussion_r143285545
-    # Based on the current use, message will never be anything except an empty string
-    # here because `EventManager.save` pops off the `message` attribute before
-    # this is called. If there is a message, the above path will be hit with the
-    # message interface, and the message will be correctly used.
     return ('no_interfaces', [''])
 
 
