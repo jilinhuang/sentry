@@ -97,9 +97,6 @@ def get_hashes_for_event_with_reason(event):
     # here because `EventManager.save` pops off the `message` attribute before
     # this is called. If there is a message, the above path will be hit with the
     # message interface, and the message will be correctly used.
-    if event.message:
-        return ('message', [event.message])
-
     return ('no_interfaces', [''])
 
 
