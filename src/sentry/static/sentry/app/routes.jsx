@@ -35,20 +35,27 @@ import MyIssuesViewed from './views/myIssues/viewed';
 import NewProject from './views/projectInstall/newProject';
 import OnboardingConfigure from './views/onboarding/configure/index';
 import OnboardingWizard from './views/onboarding/index';
-import OrganizationAuditLog from './views/organizationAuditLog';
-import OrganizationContext from './views/organizationContext';
-import OrganizationApiKeysView
-  from './views/settings/organization/apiKeys/organizationApiKeysView';
 import OrganizationApiKeyDetailsView
   from './views/settings/organization/apiKeys/organizationApiKeyDetailsView';
+import OrganizationApiKeysView
+  from './views/settings/organization/apiKeys/organizationApiKeysView';
+import OrganizationAuditLog from './views/organizationAuditLog';
+import OrganizationAuthView
+  from './views/settings/organization/auth/organizationAuthView';
+import OrganizationContext from './views/organizationContext';
 import OrganizationCreate from './views/organizationCreate';
 import OrganizationDashboard from './views/organizationDashboard';
 import OrganizationDetails from './views/organizationDetails';
 import OrganizationHomeContainer from './components/organizations/homeContainer';
 import OrganizationIntegrations from './views/organizationIntegrations';
+import OrganizationMembersView
+  from './views/settings/organization/members/organizationMembersView';
+import OrganizationPicker from './views/settings/components/organizationPicker';
 import OrganizationRateLimits from './views/organizationRateLimits';
 import OrganizationRepositories from './views/organizationRepositories';
 import OrganizationSettings from './views/organizationSettings';
+import OrganizationSettingsLayout
+  from './views/settings/organization/organizationSettingsLayout';
 import OrganizationStats from './views/organizationStats';
 import OrganizationTeams from './views/organizationTeams';
 import ProjectAlertRules from './views/projectAlertRules';
@@ -67,11 +74,13 @@ import ProjectInstallOverview from './views/projectInstall/overview';
 import ProjectInstallPlatform from './views/projectInstall/platform';
 import ProjectKeyDetails from './views/projectKeyDetails';
 import ProjectKeys from './views/projectKeys';
+import ProjectPicker from './views/settings/components/projectPicker';
 import ProjectProcessingIssues from './views/projectProcessingIssues';
 import ProjectReleaseTracking from './views/projectReleaseTracking';
 import ProjectReleases from './views/projectReleases';
 import ProjectSavedSearches from './views/projectSavedSearches';
 import ProjectSettings from './views/projectSettings';
+import ProjectSettingsLayout from './views/settings/project/projectSettingsLayout';
 import ProjectUserReportSettings from './views/projectUserReportSettings';
 import ProjectUserReports from './views/projectUserReports';
 import ReleaseAllEvents from './views/releaseAllEvents';
@@ -121,12 +130,68 @@ const orgSettingsRoutes = [
     component={errorHandler(OrganizationIntegrations)}
   />,
   <Route
+    key="members"
+    path="members/"
+    component={errorHandler(OrganizationMembersView)}
+  />,
+  <Route
     key="rate-limits"
     path="rate-limits/"
     component={errorHandler(OrganizationRateLimits)}
   />,
   <Route key="repos" path="repos/" component={errorHandler(OrganizationRepositories)} />,
   <Route key="settings" path="settings/" component={errorHandler(OrganizationSettings)} />
+];
+
+const projectSettingsRoutes = [
+  <Route key="alerts/" path="alerts/" component={errorHandler(ProjectAlertSettings)} />,
+  <Route
+    key="alerts/rules/"
+    path="alerts/rules/"
+    component={errorHandler(ProjectAlertRules)}
+  />,
+  <Route
+    key="release-tracking/"
+    path="release-tracking/"
+    component={errorHandler(ProjectReleaseTracking)}
+  />,
+  <Route
+    key="data-forwarding/"
+    path="data-forwarding/"
+    component={errorHandler(ProjectDataForwarding)}
+  />,
+  <Route
+    key="debug-symbols/"
+    path="debug-symbols/"
+    component={errorHandler(ProjectDebugSymbols)}
+  />,
+  <Route key="filters/" path="filters/" component={errorHandler(ProjectFilters)} />,
+  <Route
+    key="saved-searches/"
+    path="saved-searches/"
+    component={errorHandler(ProjectSavedSearches)}
+  />,
+  <Route key="keys/" path="keys/" component={errorHandler(ProjectKeys)} />,
+  <Route
+    key="keys/:keyId/"
+    path="keys/:keyId/"
+    component={errorHandler(ProjectKeyDetails)}
+  />,
+  <Route
+    key="processing-issues/"
+    path="processing-issues/"
+    component={errorHandler(ProjectProcessingIssues)}
+  />,
+  <Route
+    key="user-feedback/"
+    path="user-feedback/"
+    component={errorHandler(ProjectUserReportSettings)}
+  />,
+  <Route key="csp/" path="csp/" component={errorHandler(ProjectCspSettings)} />,
+  <Route key="install/" path="install/" component={errorHandler(ProjectDocsContext)}>
+    <IndexRoute component={errorHandler(ProjectInstallOverview)} />
+    <Route path=":platform/" component={errorHandler(ProjectInstallPlatform)} />
+  </Route>
 ];
 
 function routes() {
@@ -161,7 +226,31 @@ function routes() {
         />
       </Route>
 
-      <Route path="/settings/" component={errorHandler(Settings)} />
+      <Route path="/settings/" component={errorHandler(Settings)}>
+        <Route path="organization/">
+          <IndexRoute component={errorHandler(OrganizationPicker)} />
+
+          <Route path=":orgId/" component={errorHandler(OrganizationContext)}>
+
+            <Route component={errorHandler(OrganizationSettingsLayout)}>
+              <IndexRoute component={errorHandler(OrganizationSettings)} />
+
+              {orgSettingsRoutes}
+            </Route>
+
+            <Route path="project/">
+              <IndexRoute component={errorHandler(ProjectPicker)} />
+              <Route path=":projectId/" component={errorHandler(ProjectSettingsLayout)}>
+                <IndexRoute component={ProjectSettings} />
+                {projectSettingsRoutes}
+              </Route>
+            </Route>
+
+          </Route>
+
+        </Route>
+      </Route>
+
       <Route path="/api/new-token/" component={errorHandler(ApiNewToken)} />
 
       <Route path="/manage/" component={errorHandler(AdminLayout)}>
@@ -277,6 +366,7 @@ function routes() {
           </Route>
           <Route path="user-feedback/" component={errorHandler(ProjectUserReports)} />
           <Route path="settings/" component={errorHandler(ProjectSettings)}>
+
             <Route path="alerts/" component={errorHandler(ProjectAlertSettings)} />
             <Route path="alerts/rules/" component={errorHandler(ProjectAlertRules)} />
             <Route
@@ -309,6 +399,7 @@ function routes() {
               <Route path=":platform/" component={errorHandler(ProjectInstallPlatform)} />
             </Route>
           </Route>
+
           <Redirect from="group/:groupId/" to="issues/:groupId/" />
           <Route
             path="issues/:groupId/"
