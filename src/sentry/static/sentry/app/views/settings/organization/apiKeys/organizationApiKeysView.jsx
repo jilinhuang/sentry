@@ -1,14 +1,15 @@
-import React from 'react';
 import {browserHistory} from 'react-router';
+import React from 'react';
 
 import {Client} from '../../../../api';
 import {t} from '../../../../locale';
 import Button from '../../../../components/buttons/button';
 import Link from '../../../../components/link';
 import LinkWithConfirmation from '../../../../components/linkWithConfirmation';
+import OrganizationSettingsView from '../../../organizationSettingsView';
 import SentryTypes from '../../../../proptypes';
 import SpreadLayout from '../../../../components/spreadLayout';
-import OrganizationSettingsView from '../../../organizationSettingsView';
+import recreateRoute from '../../../../utils/recreateRoute';
 
 class OrganizationApiKeysView extends OrganizationSettingsView {
   static contextTypes = {
@@ -51,7 +52,10 @@ class OrganizationApiKeysView extends OrganizationSettingsView {
       success: data => {
         this.setState({busy: false});
         browserHistory.push(
-          `/organizations/${this.props.params.orgId}/api-keys/${data.id}`
+          recreateRoute(`${data.id}/`, {
+            params: this.props.params,
+            routes: this.props.routes
+          })
         );
       },
       error: () => {
@@ -104,7 +108,10 @@ class OrganizationApiKeysView extends OrganizationSettingsView {
             </colgroup>
             <tbody>
               {keyList.map(({id, key, label}) => {
-                let apiDetailsUrl = `/organizations/${this.props.params.orgId}/api-keys/${id}`;
+                let apiDetailsUrl = recreateRoute(`${id}/`, {
+                  params: this.props.params,
+                  routes: this.props.routes
+                });
                 return (
                   <tr key={key}>
                     <td>
