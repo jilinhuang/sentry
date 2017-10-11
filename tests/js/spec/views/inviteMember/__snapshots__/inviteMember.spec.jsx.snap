@@ -20,7 +20,7 @@ exports[`CreateProject render() should render 1`] = `
       label="Username(s)"
       name="email"
       onChange={[Function]}
-      placeholderlabel="Usernames"
+      placeholderlabel="e.g. teammate@example.com"
       required={false}
       spellCheck="false"
     />
@@ -127,7 +127,7 @@ exports[`CreateProject render() should render no team select when there is only 
       label="Username(s)"
       name="email"
       onChange={[Function]}
-      placeholderlabel="Usernames"
+      placeholderlabel="e.g. teammate@example.com"
       required={false}
       spellCheck="false"
     />
