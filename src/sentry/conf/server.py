@@ -724,7 +724,7 @@ SENTRY_FEATURES = {
     'organizations:saml2': False,
     'organizations:group-unmerge': False,
     'organizations:integrations-v3': False,
-    'projects:new-settings': True,
+    'organizations:new-settings': False,
     'projects:global-events': False,
     'projects:plugins': True,
     'projects:dsym': False,
