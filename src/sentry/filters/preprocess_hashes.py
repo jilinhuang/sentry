@@ -6,6 +6,8 @@ import six
 from django.core.cache import cache, get_cache, InvalidCacheBackendError
 
 from sentry.interfaces.base import get_interfaces
+from sentry.interfaces.exception import Exception as ExceptionInterface, SingleException
+from sentry.interfaces.stacktrace import Frame, Stacktrace
 from sentry.event_manager import _get_hashes_from_fingerprint, md5_from_hash
 
 
@@ -29,18 +31,25 @@ def get_preprocess_hash_inputs(event):
 
 def get_preprocess_hash_inputs_with_reason(data):
     interfaces = get_interfaces(data)
+    platform = data['platform']
     for interface in six.itervalues(interfaces):
-        # normalize_in_app hasn't run on the data, so
-        # `in_app` isn't necessarily accurate
-        result = interface.get_hash(data['platform'], system_frames=True, is_processed_data=False)
-        if not result:
-            continue
-        return (interface.get_path(), [result])
+        kwargs = {'is_processed_data': False}
+        if isinstance(interface, SingleException):
+            kwargs['platform'] = platform
+        elif isinstance(interface, ExceptionInterface) or isinstance(interface, Stacktrace) or \
+                isinstance(interface, Frame):
+            # normalize_in_app hasn't run on the data, so
+            # `in_app` isn't necessarily accurate
+            kwargs.update({
+                'platform': platform,
+                'system_frames': True,
+            })
+        result = interface.get_hash(**kwargs)
+        if result:
+            return (interface.get_path(), [result])
 
     if not data.get('message'):
         raise UnableToGenerateHash
-
-    return ('message', [data['message']])
 
 
 def get_preprocess_hashes_from_fingerprint(data, fingerprint):

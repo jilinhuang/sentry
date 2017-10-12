@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function
 
 import logging
 
+from sentry.event_manager import EventManager
 from sentry.filters.preprocess_hashes import (
     get_preprocess_hash_inputs, get_preprocess_hashes, UnableToGenerateHash
 )
@@ -19,24 +20,31 @@ class PreProcessingHashTest(TestCase):
             'timestamp': 1403007314.570599,
             'level': logging.ERROR,
             'logger': 'default',
+            'platform': 'python',
             'tags': [],
         }
         result.update(kwargs)
         result.update(data)
-        return result
+        manager = EventManager(result)
+        manager.normalize()
+        return manager.data
 
     def test_similar_message_prefix_doesnt_match(self):
-        event_data1 = self.make_event_data(message='foo bar')
+        manager = EventManager(self.make_event_data(message='foo bar'))
+        manager.normalize()
+        event_data1 = manager.data
         hashes1 = get_preprocess_hashes(event_data1)
 
-        event_data2 = self.make_event_data(message='foo baz')
+        manager = EventManager(self.make_event_data(message='foo baz'))
+        manager.normalize()
+        event_data2 = manager.data
         hashes2 = get_preprocess_hashes(event_data2)
 
         assert hashes1 != hashes2
 
     def test_no_message(self):
         event_data = self.make_event_data()
-        event_data.pop('message')
+        event_data.pop('sentry.interfaces.Message')
 
         with self.assertRaises(UnableToGenerateHash):
             get_preprocess_hashes(event_data)
@@ -47,6 +55,7 @@ class PreProcessingHashTest(TestCase):
             event_id='a' * 32,
             fingerprint=['a' * 32],
         )
+
         event_data2 = self.make_event_data(
             message='foo bar',
             event_id='b' * 32,
@@ -62,6 +71,7 @@ class PreProcessingHashTest(TestCase):
             event_id='a' * 32,
             fingerprint=['{{ default }}', 'a' * 32],
         )
+
         event_data2 = self.make_event_data(
             message='foo bar',
             event_id='b' * 32,
@@ -120,6 +130,7 @@ class PreProcessingHashTest(TestCase):
             platform='python',
             message='Foo bar',
         )
+
         event_data2 = self.make_event_data(
             data=data,
             platform='python',
@@ -165,14 +176,9 @@ class PreProcessingHashTest(TestCase):
 
     def test_exception_with_stacktrace(self):
         data = {
-            'sentry.interfaces.Exception': {
-                'exc_omitted':
-                None,
+            'exception': {
                 'values': [
                     {
-                        'mechanism': None,
-                        'module': None,
-                        'raw_stacktrace': None,
                         'stacktrace': {
                             'frames': [
                                 {

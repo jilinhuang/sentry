@@ -89,6 +89,8 @@ class Interface(object):
             self._data = {}
 
     def __getattr__(self, name):
+        if name == '__bases__':
+            return super(Interface, self).__getattr__(name)
         return self._data[name]
 
     def __setattr__(self, name, value):
